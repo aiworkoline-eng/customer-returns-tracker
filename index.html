@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Returns Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .auth-card {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+        }
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .search-form .form-group {
+            margin-bottom: 0;
+            min-width: 200px;
+        }
+
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .records-table th,
+        .records-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .records-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .records-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .setup-notice {
+            background: #fff3cd;
+            color: #856404;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeaa7;
+        }
+
+        .setup-notice h3 {
+            margin-bottom: 10px;
+            color: #856404;
+        }
+
+        .setup-notice code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-form .form-group {
+                min-width: 100%;
+            }
+
+            .dashboard-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .business-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-suspended {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Customer Returns Tracker</h1>
+            <p>Professional return management for small businesses</p>
+        </div>
+
+        <!-- Firebase Setup Notice -->
+        <div id="setupNotice" class="setup-notice">
+            <h3>⚠️ Firebase Setup Required</h3>
+            <p>To use this application, you need to configure Firebase. Replace the <code>firebaseConfig</code> object in the script section with your own Firebase project credentials.</p>
+            <p><strong>Steps:</strong></p>
+            <ol>
+                <li>Go to <a href="https://console.firebase.google.com" target="_blank">Firebase Console</a></li>
+                <li>Create a new project</li>
+                <li>Enable Firestore Database</li>
+                <li>Get your config object and replace it in the code</li>
+            </ol>
+        </div>
+
+        <!-- Login Screen -->
+        <div id="loginScreen">
+            <div class="card auth-card">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Sign In</h2>
+                
+                <div class="form-group">
+                    <label>Login Type:</label>
+                    <select id="userType">
+                        <option value="business">Business User</option>
+                        <option value="admin">Administrator</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+
+                <button class="btn" onclick="handleLogin()" id="loginBtn" style="width: 100%; margin-bottom: 15px;">Sign In</button>
+
+                <div style="text-align: center;">
+                    <p>Don't have an account? <a href="#" onclick="showRegister()" style="color: #667eea; text-decoration: none; font-weight: 600;">Register as Business</a></p>
+                    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                        Default Admin: admin@system.com / admin123
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Screen -->
+        <div id="registerScreen" class="hidden">
+            <div class="card auth-card">
+                <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Business Registration</h2>
+                
+                <div class="form-group">
+                    <label>Business Name:</label>
+                    <input type="text" id="regBusinessName" placeholder="Enter business name">
+                </div>
+
+                <div class="form-group">
+                    <label>Contact Person:</label>
+                    <input type="text" id="regContactName" placeholder="Enter contact person name">
+                </div>
+
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="regEmail" placeholder="Enter email address">
+                </div>
+
+                <div class="form-group">
+                    <label>Phone:</label>
+                    <input type="tel" id="regPhone" placeholder="Enter phone number">
+                </div>
+
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" id="regPassword" placeholder="Create a password">
+                </div>
+
+                <button class="btn" onclick="handleRegister()" id="registerBtn" style="width: 100%; margin-bottom: 15px;">Register Business</button>
+
+                <div style="text-align: center;">
+                    <p>Already have an account? <a href="#" onclick="showLogin()" style="color: #667eea; text-decoration: none; font-weight: 600;">Sign In</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Dashboard -->
+        <div id="businessDashboard" class="hidden">
+            <div class="dashboard-nav">
+                <div class="logo">Returns Tracker</div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">B</div>
+                    <div>
+                        <div style="font-weight: 600;" id="businessName">Business Name</div>
+                        <div style="font-size: 14px; color: #666;">Business User</div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showBusinessTab('add')">Add Return</button>
+                <button class="tab" onclick="showBusinessTab('search')">Search Records</button>
+            </div>
+
+            <!-- Add Return Tab -->
+            <div id="businessAddTab">
+                <div class="card">
+                    <h3 style="margin-bottom: 25px; color: #333;">Add Customer Return Record</h3>
+                    
+                    <div class="two-column">
+                        <div>
+                            <div class="form-group">
+                                <label>Customer Name:</label>
+                                <input type="text" id="customerName" placeholder="Enter customer name">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Address:</label>
+                                <textarea id="customerAddress" placeholder="Enter customer address"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Number 1:</label>
+                                <input type="tel" id="phone1" placeholder="Primary phone number">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Number 2:</label>
+                                <input type="tel" id="phone2" placeholder="Secondary phone number (optional)">
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="form-group">
+                                <label>Return Details:</label>
+                                <textarea id="returnDetails" placeholder="Describe the reason for return"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Item Details:</label>
+                                <textarea id="itemDetails" placeholder="Product name, SKU, quantity, etc."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn" onclick="addReturn()" id="addReturnBtn" style="margin-top: 20px;">Add Return Record</button>
+                </div>
+            </div>
+
+            <!-- Search Tab -->
+            <div id="businessSearchTab" class="hidden">
+                <div class="search-section">
+                    <h3 style="margin-bottom: 20px; color: #333;">Search Customer Records</h3>
+                    
+                    <div class="search-form">
+                        <div class="form-group">
+                            <label>Search by Name:</label>
+                            <input type="text" id="searchName" placeholder="Enter customer name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Search by Phone:</label>
+                            <input type="tel" id="searchPhone" placeholder="Enter phone number">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button class="btn" onclick="searchRecords()">Search</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div id="searchResults">
+                        <p style="text-align: center; color: #666; font-style: italic;">Enter search criteria above to find customer records</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Dashboard -->
+        <div id="adminDashboard" class="hidden">
+            <div class="dashboard-nav">
+                <div class="logo">Returns Tracker - Admin</div>
+                <div class="user-info">
+                    <div class="user-avatar" style="background: #dc3545;">A</div>
+                    <div>
+                        <div style="font-weight: 600;">Administrator</div>
+                        <div style="font-size: 14px; color: #666;">System Admin</div>
+                    </div>
+                    <button class="btn btn-secondary btn-small" onclick="logout()">Logout</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBusinesses">-</div>
+                    <div class="stat-label">Total Businesses</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalReturns">-</div>
+                    <div class="stat-label">Total Returns</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeBusinesses">-</div>
+                    <div class="stat-label">Active Businesses</div>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="showAdminTab('businesses')">Manage Businesses</button>
+                <button class="tab" onclick="showAdminTab('returns')">All Returns</button>
+            </div>
+
+            <!-- Businesses Management Tab -->
+            <div id="adminBusinessesTab">
+                <div class="card">
+                    <h3 style="margin-bottom: 25px; color: #333;">Registered Businesses</h3>
+                    <div id="businessesList" class="loading">Loading businesses...</div>
+                </div>
+            </div>
+
+            <!-- Returns Management Tab -->
+            <div id="adminReturnsTab" class="hidden">
+                <div class="card">
+                    <h3 style="margin-bottom: 25px; color: #333;">All Customer Returns</h3>
+                    <div id="allReturnsList" class="loading">Loading returns...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert Messages -->
+        <div id="alertContainer"></div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-firestore-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.22.0/firebase-auth-compat.min.js"></script>
+
+    <script>
+        // Firebase Configuration - REPLACE WITH YOUR OWN CONFIG
+        const firebaseConfig = {
+  apiKey: "AIzaSyABXnbbmCjGoex1sO9PgEE-e4FMmZJwDNg",
+  authDomain: "customer-returns-tracker.firebaseapp.com",
+  projectId: "customer-returns-tracker",
+  storageBucket: "customer-returns-tracker.firebasestorage.app",
+  messagingSenderId: "1034601754417",
+  appId: "1:1034601754417:web:3a9e5ce914238f852c8a10",
+  measurementId: "G-93MG22LD0T"
+};
+
+        // Initialize Firebase
+        let db, auth;
+        let isFirebaseConfigured = false;
+
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            auth = firebase.auth();
+            isFirebaseConfigured = true;
+            document.getElementById('setupNotice').style.display = 'none';
+        } catch (error) {
+            console.log('Firebase not configured. Using demo mode.');
+            showAlert('Firebase not configured. This is demo mode only.', 'error');
+        }
+
+        // Application State
+        let currentUser = null;
+        let businesses = [];
+        let returns = [];
+
+        // Collections references
+        const COLLECTIONS = {
+            BUSINESSES: 'businesses',
+            RETURNS: 'returns',
+            ADMIN: 'admin'
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            if (isFirebaseConfigured) {
+                try {
+                    await initializeAdmin();
+                    await loadData();
+                } catch (error) {
+                    console.error('Error initializing app:', error);
+                    showAlert('Error connecting to database. Please check your connection.', 'error');
+                }
+            } else {
+                // Demo mode - use local data
+                initializeDemoData();
+            }
+            showLogin();
+        }
+
+        // Initialize default admin if not exists
+        async function initializeAdmin() {
+            if (!isFirebaseConfigured) return;
+            
+            try {
+                const adminDoc = await db.collection(COLLECTIONS.ADMIN).doc('main').get();
+                if (!adminDoc.exists) {
+                    await db.collection(COLLECTIONS.ADMIN).doc('main').set({
+                        email: 'admin@system.com',
+                        password: 'admin123',
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            } catch (error) {
+                console.error('Error initializing admin:', error);
+            }
+        }
+
+        // Load data from Firestore
+        async function loadData() {
+            if (!isFirebaseConfigured) return;
+
+            try {
+                // Load businesses
+                const businessesSnapshot = await db.collection(COLLECTIONS.BUSINESSES).get();
+                businesses = businessesSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                // Load returns
+                const returnsSnapshot = await db.collection(COLLECTIONS.RETURNS).get();
+                returns = returnsSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showAlert('Error loading data from database', 'error');
+            }
+        }
+
+        // Demo data for when Firebase is not configured
+        function initializeDemoData() {
+            businesses = [
+                {
+                    id: '1',
+                    businessName: "Demo Store",
+                    contactName: "John Demo",
+                    email: "business@demo.com",
+                    phone: "555-0123",
+                    password: "demo123",
+                    status: "active",
+                    registeredDate: new Date().toISOString()
+                }
+            ];
+
+            returns = [
+                {
+                    id: '1',
+                    businessId: '1',
+                    businessName: "Demo Store",
+                    customerName: "Alice Johnson",
+                    customerAddress: "123 Main St, Anytown, AT 12345",
+                    phone1: "555-0101",
+                    phone2: "555-0102",
+                    returnDetails: "Product arrived damaged",
+                    itemDetails: "iPhone 14 Pro - Silver, 256GB",
+                    dateAdded: new Date().toISOString()
+                }
+            ];
+        }
+
+        // Authentication functions
+        function showLogin() {
+            hideAllScreens();
+            document.getElementById('loginScreen').classList.remove('hidden');
+        }
+
+        function showRegister() {
+            hideAllScreens();
+            document.getElementById('registerScreen').classList.remove('hidden');
+        }
+
+        function hideAllScreens() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('registerScreen').classList.add('hidden');
+            document.getElementById('businessDashboard').classList.add('hidden');
+            document.getElementById('adminDashboard').classList.add('hidden');
+        }
+
+        async function handleLogin() {
+            const userType = document.getElementById('userType').value;
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showAlert('Please enter both email and password', 'error');
+                return;
+            }
+
+            document.getElementById('loginBtn').disabled = true;
+            document.getElementById('loginBtn').textContent = 'Signing In...';
+
+            try {
+                if (userType === 'admin') {
+                    await handleAdminLogin(email, password);
+                } else {
+                    await handleBusinessLogin(email, password);
+                }
+            } catch (error) {
+                showAlert('Login failed. Please try again.', 'error');
+            } finally {
+                document.getElementById('loginBtn').disabled = false;
+                document.getElementById('loginBtn').textContent = 'Sign In';
+            }
+        }
+
+        async function handleAdminLogin(email, password) {
+            if (isFirebaseConfigured) {
+                const adminDoc = await db.collection(COLLECTIONS.ADMIN).doc('main').get();
+                const adminData = adminDoc.data();
+                
+                if (adminData && adminData.email === email && adminData.password === password) {
+                    currentUser = { type: 'admin', email: email };
+                    showAdminDashboard();
+                    showAlert('Admin login successful', 'success');
+                } else {
+                    showAlert('Invalid admin credentials', 'error');
+                }
+            } else {
+                // Demo mode
+                if (email === 'admin@system.com' && password === 'admin123') {
+                    currentUser = { type: 'admin', email: email };
+                    showAdminDashboard();
+                    showAlert('Admin login successful (Demo Mode)', 'success');
+                } else {
+                    showAlert('Invalid admin credentials', 'error');
+                }
+            }
+        }
+
+        async function handleBusinessLogin(email, password) {
+            const business = businesses.find(b => b.email === email && b.password === password);
+            if (business) {
+                if (business.status === 'suspended') {
+                    showAlert('Your account has been suspended. Please contact admin.', 'error');
+                    return;
+                }
+                currentUser = { type: 'business', ...business };
+                showBusinessDashboard();
+                showAlert(`Welcome back, ${business.businessName}!`, 'success');
+            } else {
+                showAlert('Invalid email or password', 'error');
+            }
+
+            // Clear form
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        async function handleRegister() {
+            const businessName = document.getElementById('regBusinessName').value.trim();
+            const contactName = document.getElementById('regContactName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            if (!businessName || !contactName || !email || !phone || !password) {
+                showAlert('Please fill in all fields', 'error');
+                return;
+            }
+
+            // Check if email already exists
+            if (businesses.find(b => b.email === email)) {
+                showAlert('Email already registered', 'error');
+                return;
+            }
+
+            document.getElementById('registerBtn').disabled = true;
+            document.getElementById('registerBtn').textContent = 'Registering...';
+
+            try {
+                const newBusiness = {
+                    businessName,
+                    contactName,
+                    email,
+                    phone,
+                    password,
+                    status: 'active',
+                    registeredDate: new Date().toISOString()
+                };
+
+                if (isFirebaseConfigured) {
+                    const docRef = await db.collection(COLLECTIONS.BUSINESSES).add(newBusiness);
+                    newBusiness.id = docRef.id;
+                } else {
+                    newBusiness.id = (businesses.length + 1).toString();
+                }
+
+                businesses.push(newBusiness);
+                showAlert('Registration successful! You can now login.', 'success');
+                showLogin();
+
+                // Clear form
+                document.getElementById('regBusinessName').value = '';
+                document.getElementById('regContactName').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPhone').value = '';
+                document.getElementById('regPassword').value = '';
+
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('Registration failed. Please try again.', 'error');
+            } finally {
+                document.getElementById('registerBtn').disabled = false;
+                document.getElementById('registerBtn').textContent = 'Register Business';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            showLogin();
+            showAlert('Logged out successfully', 'success');
+        }
+
+        // Business Dashboard
+        function showBusinessDashboard() {
+            hideAllScreens();
+            document.getElementById('businessDashboard').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('businessName').textContent = currentUser.businessName;
+            document.getElementById('userAvatar').textContent = currentUser.businessName.charAt(0).toUpperCase();
+            
+            showBusinessTab('add');
+        }
+
+        function showBusinessTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('#businessDashboard .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide tabs
+            document.getElementById('businessAddTab').classList.add('hidden');
+            document.getElementById('businessSearchTab').classList.add('hidden');
+
+            if (tab === 'add') {
+                document.getElementById('businessAddTab').classList.remove('hidden');
+            } else {
+                document.getElementById('businessSearchTab').classList.remove('hidden');
+            }
+        }
+
+        async function addReturn() {
+            const customerName = document.getElementById('customerName').value.trim();
+            const customerAddress = document.getElementById('customerAddress').value.trim();
+            const phone1 = document.getElementById('phone1').value.trim();
+            const phone2 = document.getElementById('phone2').value.trim();
+            const returnDetails = document.getElementById('returnDetails').value.trim();
+            const itemDetails = document.getElementById('itemDetails').value.trim();
+
+            if (!customerName || !customerAddress || !phone1 || !returnDetails || !itemDetails) {
+                showAlert('Please fill in all required fields', 'error');
+                return;
+            }
+
+            document.getElementById('addReturnBtn').disabled = true;
+            document.getElementById('addReturnBtn').textContent = 'Adding...';
+
+            try {
+                const newReturn = {
+                    businessId: currentUser.id,
+                    businessName: currentUser.businessName,
+                    customerName,
+                    customerAddress,
+                    phone1,
+                    phone2,
+                    returnDetails,
+                    itemDetails,
+                    dateAdded: new Date().toISOString()
+                };
+
+                if (isFirebaseConfigured) {
+                    const docRef = await db.collection(COLLECTIONS.RETURNS).add(newReturn);
+                    newReturn.id = docRef.id;
+                } else {
+                    newReturn.id = (returns.length + 1).toString();
+                }
+
+                returns.push(newReturn);
+                showAlert('Return record added successfully', 'success');
+
+                // Clear form
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerAddress').value = '';
+                document.getElementById('phone1').value = '';
+                document.getElementById('phone2').value = '';
+                document.getElementById('returnDetails').value = '';
+                document.getElementById('itemDetails').value = '';
+
+            } catch (error) {
+                console.error('Error adding return:', error);
+                showAlert('Failed to add return record', 'error');
+            } finally {
+                document.getElementById('addReturnBtn').disabled = false;
+                document.getElementById('addReturnBtn').textContent = 'Add Return Record';
+            }
+        }
+
+        function searchRecords() {
+            const searchName = document.getElementById('searchName').value.trim().toLowerCase();
+            const searchPhone = document.getElementById('searchPhone').value.trim();
+
+            if (!searchName && !searchPhone) {
+                showAlert('Please enter a name or phone number to search', 'error');
+                return;
+            }
+
+            // Filter returns for current business only
+            let results = returns.filter(r => r.businessId === currentUser.id);
+
+            if (searchName) {
+                results = results.filter(r => r.customerName.toLowerCase().includes(searchName));
+            }
+
+            if (searchPhone) {
+                results = results.filter(r => r.phone1.includes(searchPhone) || r.phone2.includes(searchPhone));
+            }
+
+            displaySearchResults(results);
+        }
+
+        function displaySearchResults(results) {
+            const container = document.getElementById('searchResults');
+
+            if (results.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No records found matching your search criteria</p>';
+                return;
+            }
+
+            let html = `
+                <h4 style="margin-bottom: 20px; color: #333;">Search Results (${results.length} found)</h4>
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Phone</th>
+                            <th>Return Details</th>
+                            <th>Item Details</th>
+                            <th>Date Added</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            results.forEach(record => {
+                html += `
+                    <tr>
+                        <td>${record.customerName}</td>
+                        <td>${record.phone1}${record.phone2 ? '<br>' + record.phone2 : ''}</td>
+                        <td>${record.returnDetails}</td>
+                        <td>${record.itemDetails}</td>
+                        <td>${new Date(record.dateAdded).toLocaleDateString()}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Admin Dashboard
+        async function showAdminDashboard() {
+            hideAllScreens();
+            document.getElementById('adminDashboard').classList.remove('hidden');
+            await updateAdminStats();
+            showAdminTab('businesses');
+        }
+
+        function showAdminTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('#adminDashboard .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide tabs
+            document.getElementById('adminBusinessesTab').classList.add('hidden');
+            document.getElementById('adminReturnsTab').classList.add('hidden');
+
+            if (tab === 'businesses') {
+                document.getElementById('adminBusinessesTab').classList.remove('hidden');
+                displayBusinessesList();
+            } else {
+                document.getElementById('adminReturnsTab').classList.remove('hidden');
+                displayAllReturns();
+            }
+        }
+
+        async function updateAdminStats() {
+            document.getElementById('totalBusinesses').textContent = businesses.length;
+            document.getElementById('totalReturns').textContent = returns.length;
+            document.getElementById('activeBusinesses').textContent = businesses.filter(b => b.status === 'active').length;
+        }
+
+        function displayBusinessesList() {
+            const container = document.getElementById('businessesList');
+
+            if (businesses.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No businesses registered yet</p>';
+                return;
+            }
+
+            let html = `
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Business Name</th>
+                            <th>Contact Person</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Registered</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            businesses.forEach(business => {
+                const statusClass = business.status === 'active' ? 'status-active' : 
+                                   business.status === 'pending' ? 'status-pending' : 'status-suspended';
+                
+                html += `
+                    <tr>
+                        <td>${business.businessName}</td>
+                        <td>${business.contactName}</td>
+                        <td>${business.email}</td>
+                        <td>${business.phone}</td>
+                        <td><span class="business-status ${statusClass}">${business.status.toUpperCase()}</span></td>
+                        <td>${new Date(business.registeredDate).toLocaleDateString()}</td>
+                        <td class="actions">
+                            ${business.status === 'active' ? 
+                                `<button class="btn btn-secondary btn-small" onclick="suspendBusiness('${business.id}')">Suspend</button>` :
+                                `<button class="btn btn-small" onclick="activateBusiness('${business.id}')">Activate</button>`
+                            }
+                            <button class="btn btn-danger btn-small" onclick="deleteBusiness('${business.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function displayAllReturns() {
+            const container = document.getElementById('allReturnsList');
+
+            if (returns.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; font-style: italic;">No return records found</p>';
+                return;
+            }
+
+            let html = `
+                <table class="records-table">
+                    <thead>
+                        <tr>
+                            <th>Business</th>
+                            <th>Customer Name</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Return Details</th>
+                            <th>Item Details</th>
+                            <th>Date Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            returns.forEach(record => {
+                html += `
+                    <tr>
+                        <td>${record.businessName}</td>
+                        <td>${record.customerName}</td>
+                        <td>${record.phone1}${record.phone2 ? '<br>' + record.phone2 : ''}</td>
+                        <td>${record.customerAddress}</td>
+                        <td>${record.returnDetails}</td>
+                        <td>${record.itemDetails}</td>
+                        <td>${new Date(record.dateAdded).toLocaleDateString()}</td>
+                        <td class="actions">
+                            <button class="btn btn-small" onclick="editReturn('${record.id}')">Edit</button>
+                            <button class="btn btn-danger btn-small" onclick="deleteReturn('${record.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        async function suspendBusiness(businessId) {
+            if (confirm('Are you sure you want to suspend this business?')) {
+                try {
+                    const business = businesses.find(b => b.id === businessId);
+                    if (business) {
+                        business.status = 'suspended';
+                        
+                        if (isFirebaseConfigured) {
+                            await db.collection(COLLECTIONS.BUSINESSES).doc(businessId).update({
+                                status: 'suspended'
+                            });
+                        }
+                        
+                        displayBusinessesList();
+                        updateAdminStats();
+                        showAlert('Business suspended successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Error suspending business:', error);
+                    showAlert('Failed to suspend business', 'error');
+                }
+            }
+        }
+
+        async function activateBusiness(businessId) {
+            try {
+                const business = businesses.find(b => b.id === businessId);
+                if (business) {
+                    business.status = 'active';
+                    
+                    if (isFirebaseConfigured) {
+                        await db.collection(COLLECTIONS.BUSINESSES).doc(businessId).update({
+                            status: 'active'
+                        });
+                    }
+                    
+                    displayBusinessesList();
+                    updateAdminStats();
+                    showAlert('Business activated successfully', 'success');
+                }
+            } catch (error) {
+                console.error('Error activating business:', error);
+                showAlert('Failed to activate business', 'error');
+            }
+        }
+
+        async function deleteBusiness(businessId) {
+            if (confirm('Are you sure you want to delete this business? This will also delete all their return records.')) {
+                try {
+                    // Remove from local arrays
+                    businesses = businesses.filter(b => b.id !== businessId);
+                    returns = returns.filter(r => r.businessId !== businessId);
+                    
+                    if (isFirebaseConfigured) {
+                        // Delete from Firestore
+                        await db.collection(COLLECTIONS.BUSINESSES).doc(businessId).delete();
+                        
+                        // Delete all returns from this business
+                        const returnsQuery = await db.collection(COLLECTIONS.RETURNS)
+                            .where('businessId', '==', businessId).get();
+                        
+                        const batch = db.batch();
+                        returnsQuery.docs.forEach(doc => {
+                            batch.delete(doc.ref);
+                        });
+                        await batch.commit();
+                    }
+                    
+                    displayBusinessesList();
+                    updateAdminStats();
+                    showAlert('Business deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting business:', error);
+                    showAlert('Failed to delete business', 'error');
+                }
+            }
+        }
+
+        async function editReturn(returnId) {
+            const returnRecord = returns.find(r => r.id === returnId);
+            if (!returnRecord) return;
+
+            const newCustomerName = prompt('Customer Name:', returnRecord.customerName);
+            if (newCustomerName === null) return;
+
+            const newPhone1 = prompt('Phone Number 1:', returnRecord.phone1);
+            if (newPhone1 === null) return;
+
+            const newPhone2 = prompt('Phone Number 2:', returnRecord.phone2);
+            if (newPhone2 === null) return;
+
+            const newAddress = prompt('Address:', returnRecord.customerAddress);
+            if (newAddress === null) return;
+
+            const newReturnDetails = prompt('Return Details:', returnRecord.returnDetails);
+            if (newReturnDetails === null) return;
+
+            const newItemDetails = prompt('Item Details:', returnRecord.itemDetails);
+            if (newItemDetails === null) return;
+
+            try {
+                // Update local record
+                returnRecord.customerName = newCustomerName.trim();
+                returnRecord.phone1 = newPhone1.trim();
+                returnRecord.phone2 = newPhone2.trim();
+                returnRecord.customerAddress = newAddress.trim();
+                returnRecord.returnDetails = newReturnDetails.trim();
+                returnRecord.itemDetails = newItemDetails.trim();
+
+                if (isFirebaseConfigured) {
+                    await db.collection(COLLECTIONS.RETURNS).doc(returnId).update({
+                        customerName: returnRecord.customerName,
+                        phone1: returnRecord.phone1,
+                        phone2: returnRecord.phone2,
+                        customerAddress: returnRecord.customerAddress,
+                        returnDetails: returnRecord.returnDetails,
+                        itemDetails: returnRecord.itemDetails
+                    });
+                }
+
+                displayAllReturns();
+                showAlert('Return record updated successfully', 'success');
+            } catch (error) {
+                console.error('Error updating return:', error);
+                showAlert('Failed to update return record', 'error');
+            }
+        }
+
+        async function deleteReturn(returnId) {
+            if (confirm('Are you sure you want to delete this return record?')) {
+                try {
+                    returns = returns.filter(r => r.id !== returnId);
+                    
+                    if (isFirebaseConfigured) {
+                        await db.collection(COLLECTIONS.RETURNS).doc(returnId).delete();
+                    }
+                    
+                    displayAllReturns();
+                    updateAdminStats();
+                    showAlert('Return record deleted successfully', 'success');
+                } catch (error) {
+                    console.error('Error deleting return:', error);
+                    showAlert('Failed to delete return record', 'error');
+                }
+            }
+        }
+
+        // Utility functions
+        function showAlert(message, type) {
+            const container = document.getElementById('alertContainer');
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+
+            container.appendChild(alertDiv);
+
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.parentNode.removeChild(alertDiv);
+                }
+            }, 5000);
+
+            // Scroll to top to show alert
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && (e.target.id === 'loginEmail' || e.target.id === 'loginPassword')) {
+                handleLogin();
+            }
+            if (e.key === 'Enter' && (e.target.id === 'searchName' || e.target.id === 'searchPhone')) {
+                searchRecords();
+            }
+        });
+    </script>
+</body>
+</html>
